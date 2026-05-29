@@ -7,10 +7,45 @@ on:
       - 'v*'
 
 jobs:
-  publish-tauri:
+  create-release:
     permissions:
       contents: write
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Get version
+        id: get-version
+        run: |
+          VERSION=$(jq -r .version src-tauri/tauri.conf.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Draft Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          tag_name: v${{ steps.get-version.outputs.version }}
+          name: v${{ steps.get-version.outputs.version }}
+          body: 'See the assets to download this version and install.'
+
+  publish-tauri:
+    needs: create-release
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest'
+            target: 'aarch64-apple-darwin'
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest'
+            target: 'x86_64-apple-darwin'
+            args: '--target x86_64-apple-darwin'
+
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
 
@@ -21,10 +56,10 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: lts/*
-          cache: 'pnpm' # Set this to npm, yarn or pnpm.
+          cache: 'pnpm'
 
       - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
+        uses: dtolnay/rust-toolchain@stable
         with:
           targets: 'aarch64-apple-darwin,x86_64-apple-darwin'
 
@@ -34,7 +69,7 @@ jobs:
           workspaces: './src-tauri -> target'
 
       - name: install frontend dependencies
-        run: pnpm install --frozen-lockfile # change this to npm, yarn or pnpm depending on which one you use.
+        run: pnpm install --frozen-lockfile
 
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -42,9 +77,62 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
-          tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-          releaseName: 'v__VERSION__'
+          tagName: v${{ needs.create-release.outputs.version }}
+          releaseName: 'v${{ needs.create-release.outputs.version }}'
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
-          args: --target universal-apple-darwin
+          args: ${{ matrix.args }}
+
+      - name: Upload signature
+        uses: actions/upload-artifact@v4
+        with:
+          name: sig-${{ matrix.target }}
+          path: src-tauri/target/${{ matrix.target }}/release/bundle/macos/TrayOCR.app.tar.gz.sig
+
+  publish-release:
+    needs: [create-release, publish-tauri]
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download arm64 signature
+        uses: actions/download-artifact@v4
+        with:
+          name: sig-aarch64-apple-darwin
+          path: sig-aarch64
+
+      - name: Download x64 signature
+        uses: actions/download-artifact@v4
+        with:
+          name: sig-x86_64-apple-darwin
+          path: sig-x86_64
+
+      - name: Generate and upload latest.json
+        run: |
+          SIG_ARM64=$(cat sig-aarch64/TrayOCR.app.tar.gz.sig)
+          SIG_X64=$(cat sig-x86_64/TrayOCR.app.tar.gz.sig)
+          VERSION="${{ needs.create-release.outputs.version }}"
+          PUB_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          
+          cat <<EOF > latest.json
+          {
+            "version": "v$VERSION",
+            "notes": "See the assets to download this version and install.",
+            "pub_date": "$PUB_DATE",
+            "platforms": {
+              "darwin-aarch64": {
+                "signature": "$SIG_ARM64",
+                "url": "https://github.com/OSpoon/TrayOCR/releases/download/v$VERSION/TrayOCR_aarch64.app.tar.gz"
+              },
+              "darwin-x86_64": {
+                "signature": "$SIG_X64",
+                "url": "https://github.com/OSpoon/TrayOCR/releases/download/v$VERSION/TrayOCR_x64.app.tar.gz"
+              }
+            }
+          }
+          EOF
+          
+          gh release upload v$VERSION latest.json --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
