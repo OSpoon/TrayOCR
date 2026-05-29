@@ -44,9 +44,9 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDJFNzAyMzQ2NjM5NzRCRTQKUldUa1M1ZGpSaU53TGlPQ29JSnFUNkR1TERWUlUxWGZHdEdUTlhqQjUzMWYwYkRHUzd5TW5jcGIK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDEwMjk5NTEyOEY3MUE0REUKUldUZXBIR1BFcFVwRUxVMWUvMmExbStaYUhDRTJnVjRxekM2VkhRTnF0aTRFak1sbGZOWEJWNEwK",
       "endpoints": [
-        "https://github.com/OSpoon/tray-ocr-app/releases/latest/download/latest.json"
+        "https://github.com/OSpoon/TrayOCR/releases/latest/download/latest.json"
       ]
     }
   }
