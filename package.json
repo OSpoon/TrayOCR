@@ -1,5 +1,5 @@
 {
-  "name": "starter-tauri-app",
+  "name": "tray-ocr-app",
   "type": "module",
   "version": "0.1.0",
   "private": true,
@@ -57,6 +57,7 @@
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*.{ts,vue}": "eslint --fix"
+    "*.{ts,vue}": "eslint --fix",
+    "*.rs": "rustfmt"
   }
 }

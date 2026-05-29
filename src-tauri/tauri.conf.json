@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "starter-tauri-app",
+  "productName": "TrayOCR",
   "version": "0.1.0",
-  "identifier": "com.osp.starter-tauri-app",
+  "identifier": "com.osp.tray-ocr-app",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "starter-tauri-app",
+        "title": "TrayOCR",
         "width": 800,
         "height": 600
       }
@@ -37,7 +37,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDJFNzAyMzQ2NjM5NzRCRTQKUldUa1M1ZGpSaU53TGlPQ29JSnFUNkR1TERWUlUxWGZHdEdUTlhqQjUzMWYwYkRHUzd5TW5jcGIK",
       "endpoints": [
-        "https://github.com/OSpoon/starter-tauri-app/releases/latest/download/latest.json"
+        "https://github.com/OSpoon/tray-ocr-app/releases/latest/download/latest.json"
       ]
     }
   }
