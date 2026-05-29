@@ -36,9 +36,8 @@ TrayOCR is a lightweight and blazing-fast desktop utility that lives in your mac
 
 ### Installation
 1. Go to the [Releases](https://github.com/OSpoon/tray-ocr-app/releases) page.
-2. Download the `.dmg` installer corresponding to your Mac architecture:
+2. Download the `.dmg` installer:
    - **`TrayOCR_x.x.x_aarch64.dmg`** for Apple Silicon Macs (M1, M2, M3, M4, etc.)
-   - **`TrayOCR_x.x.x_x64.dmg`** for Intel Macs
 3. Drag the app into your `Applications` folder and double-click to run.
 
 > [!WARNING]
@@ -98,7 +97,7 @@ To release a new version, run:
 ```bash
 pnpm release
 ```
-This triggers `bumpp` to bump version logs across `package.json`, `Cargo.toml`, and `tauri.conf.json`, commits files, creates a version Tag (`vX.Y.Z`), and pushes to GitHub. The workflow will catch the tag, run build matrices for both architectures, and publish updates automatically.
+This triggers `bumpp` to bump version logs across `package.json`, `Cargo.toml`, and `tauri.conf.json`, commits files, creates a version Tag (`vX.Y.Z`), and pushes to GitHub. The workflow will catch the tag, build the Apple Silicon package, and publish updates automatically.
 
 ---
 
