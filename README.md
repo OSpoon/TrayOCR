@@ -1,123 +1,106 @@
-# starter-tauri-app
+# TrayOCR
 
-用于桌面应用开发的模板项目，核心栈：
+> A minimalist, menu-bar-based screenshot OCR utility for macOS. Powered by Tauri 2, Vue 3, and native macOS VisionKit.
 
-- Vue 3 + TypeScript + Vite 6
-- Tauri 2（Rust）
-- Tailwind CSS 4 + shadcn-vue
-- ESLint + simple-git-hooks + lint-staged
+<p align="center">
+  <img src="src-tauri/icons/128x128.png" width="128" height="128" alt="TrayOCR Logo" />
+</p>
+
+TrayOCR is a lightweight and blazing-fast desktop utility that lives in your macOS menu bar. Press a custom hotkey to select a screen area, extract text instantly, and automatically copy it to your clipboard. 
 
 ---
 
-## 获取模板
+## 🌟 Key Features
 
-### GitHub「Use this template」
+- **Menu-Bar / Tray POP UI**: Designed to stay out of your way. Clicking the tray icon opens a sleek popover window; the app runs in agent mode without taking space in your Dock.
+- **Native VisionKit OCR**: Uses Apple's native Vision framework (via `objc2-vision`) for near-instant, high-accuracy text recognition. Currently optimized for English (`en-US`) and Simplified Chinese (`zh-Hans`).
+- **Flexible Global Shortcuts**: Set your own hotkeys (e.g. `⌘⌥X` or `⌥A`) in the UI to trigger screen area capture globally.
+- **Click-to-Copy History**: Stores up to 200 historical OCR scans locally with timestamp logs. Just click any card to copy the text to your clipboard.
+- **Launch at Login & Window Pinning**: Toggle the app to launch automatically when you sign in, and pin the window to stay "Always on Top" when needed.
+- **Harmonious Dark & Light Mode**: Automatically matches your system preferences or lets you lock it to Dark/Light mode. Styled with modern typography and sleek glassmorphism themes.
+- **Safe OTA Updates**: Fully integrated with Tauri's secure signed auto-updater to notify you and install updates smoothly.
 
-1. 在 GitHub 打开该模板仓库。
-2. 点击 **Use this template** -> **Create a new repository**。
-3. 填写你的新仓库名（例如 `my-desktop-app`），创建并克隆到本地。
-4. 进入目录，先完成“项目初始化”（见下方表格）。
-5. 完成改名后，再安装依赖并启动项目。
+---
 
+## 🛠 Tech Stack
+
+- **Frontend**: [Vue 3](https://vuejs.org/) + [TypeScript](https://www.typescriptlang.org/) + [Vite 6](https://vite.dev/)
+- **Styling & UI**: [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn-vue](https://shadcn-vue.com/) (using native `Dialog`, `Button`, `Sonner` toasts, and `Progress` components)
+- **Backend (Core)**: [Tauri v2](https://tauri.app/) (Rust-based system bridging)
+- **OCR Engine**: macOS native `Vision` framework bindings via `objc2-vision` & `objc2-core-graphics`
+- **Linting & Formatting**: [ESLint](https://eslint.org/) + [simple-git-hooks](https://github.com/toplenboren/simple-git-hooks) + [lint-staged](https://github.com/lint-staged/lint-staged)
+
+---
+
+## 🚀 Getting Started
+
+### Installation
+1. Go to the [Releases](https://github.com/OSpoon/tray-ocr-app/releases) page.
+2. Download the `.dmg` installer corresponding to your Mac architecture:
+   - **`TrayOCR_x.x.x_aarch64.dmg`** for Apple Silicon Macs (M1, M2, M3, M4, etc.)
+   - **`TrayOCR_x.x.x_x64.dmg`** for Intel Macs
+3. Drag the app into your `Applications` folder and double-click to run.
+
+> [!WARNING]
+> **Screen Recording Permission required**: Since TrayOCR uses the native screen capture tool (`screencapture -i`) to let you draw a box over target screen contents, macOS will request **Screen Recording** permission the first time you initiate a scan. Please go to **System Settings -> Privacy & Security -> Screen & System Audio Recording** and toggle **TrayOCR** to **ON** to ensure screenshots capture successfully.
+
+---
+
+## 💻 Local Development
+
+### 1) Prerequisites
+Ensure you have Rust, Node.js (v18+), and `pnpm` installed on your macOS machine. Refer to the [Tauri setup guide](https://tauri.app/v2/start/prerequisites/) if needed.
+
+### 2) Install Dependencies
 ```bash
 pnpm install
+```
+
+### 3) Run Dev Server
+```bash
 pnpm tauri dev
 ```
 
----
-
-## 项目初始化（表格对照）
-
-示例目标值：
-
-- 项目名：`my-desktop-app`
-- 产品名：`My Desktop App`
-- 包标识：`com.acme.mydesktop`
-- Rust lib 名：`my_desktop_app_lib`
-
-| 序号 | 文件 | 修改项 | 原值 | 新值 |
-| --- | --- | --- | --- | --- |
-| 1 | `package.json` | `name` | `starter-tauri-app` | `my-desktop-app` |
-| 2 | `src-tauri/Cargo.toml` | `[package].name` | `starter-tauri-app` | `my-desktop-app` |
-| 3 | `src-tauri/Cargo.toml` | `[lib].name` | `starter_tauri_app_lib` | `my_desktop_app_lib` |
-| 4 | `src-tauri/src/main.rs` | `run()` 调用 | `starter_tauri_app_lib::run()` | `my_desktop_app_lib::run()` |
-| 5 | `src-tauri/tauri.conf.json` | `productName` | `starter-tauri-app` | `My Desktop App` |
-| 6 | `src-tauri/tauri.conf.json` | `identifier` | `com.osp.starter-tauri-app` | `com.acme.mydesktop` |
-| 7 | `src-tauri/tauri.conf.json` | `app.windows[0].title` | `starter-tauri-app` | `My Desktop App` |
+### 4) Production Build
+Compile optimized production bundles:
+```bash
+pnpm tauri build
+```
+This runs type-checking (`vue-tsc`), packages assets with Vite, and cross-compiles targets using Cargo.
 
 ---
 
-## 改名后自检清单
+## 🔄 Release & Auto-Update Configuration
 
-- `pnpm tauri dev` 可以正常启动
-- 应用窗口标题已变为新名称
-- 控制台无 `*_lib::run()` 相关命名错误
-- `identifier` 已改为你的正式命名（建议反向域名）
+TrayOCR comes with a preconfigured GitHub Action release pipeline (`.github/workflows/release.yaml`) that builds signed, production-ready macOS installers.
 
----
-
-## 使用 GitHub Releases 更新应用（Updater 配置流程）
-
-本模板已集成 `@tauri-apps/plugin-updater` / `tauri-plugin-updater`。要让“检测更新”真正工作，需要把 **签名密钥 + GitHub Release + latest.json** 串起来（Tauri Updater 强制要求签名，不能关闭）。
-
-参考官方文档：[更新 | Tauri](https://tauri.app/zh-cn/plugin/updater/)
-
-### 1) 生成 updater 签名密钥（本地执行一次）
-
-在项目根目录运行（会生成私钥文件与对应公钥）：
-
+### 1) Generate Updater Keys (Required once)
+Tauri requires signing key pairs to authenticate update payloads:
 ```bash
 pnpm tauri signer generate -w ./.tauri/updater.key
 ```
+This creates:
+- **Private Key**: `.tauri/updater.key` (⚠️ **Never commit this to git**)
+- **Public Key**: `.tauri/updater.key.pub` (Safe to share)
 
-生成后你会得到：
+### 2) Save Public Key
+Copy the string contents of `.tauri/updater.key.pub` and write it to the `plugins.updater.pubkey` field in [tauri.conf.json](file:///Users/osp/Documents/GitHub/TrayOCR/src-tauri/tauri.conf.json).
 
-- 私钥：`.tauri/updater.key`（**不要提交到 git**）
-- 公钥：`.tauri/updater.key.pub`（可公开，用于写入配置）
+### 3) Set Up GitHub Secrets
+In your GitHub repository, go to `Settings -> Secrets and variables -> Actions` and add:
+- `TAURI_SIGNING_PRIVATE_KEY` (Paste the contents of `.tauri/updater.key`)
+- `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (If you configured a password when generating the key; otherwise leave empty/create empty)
 
-### 2) 把公钥写入 `src-tauri/tauri.conf.json`
+Under `Settings -> Actions -> General -> Workflow permissions`, set permissions to **Read and write permissions** to allow workflow jobs to create releases.
 
-将 `plugins.updater.pubkey` 替换为公钥文件内容（注意：是“内容”，不是路径）。
-
-同时确保 endpoint 指向你们仓库的 `latest.json`：
-
-- `https://github.com/<owner>/<repo>/releases/latest/download/latest.json`
-
-### 3) 打开 updater 产物生成
-
-确认 `src-tauri/tauri.conf.json` 中已启用：
-
-- `bundle.createUpdaterArtifacts: true`
-
-它会在打包时生成 updater 所需的签名产物，并由 Tauri Action 生成 `latest.json` 供 GitHub Releases 分发。
-
-### 4) 配置 GitHub Actions Secrets（用于签名）
-
-在仓库 `Settings -> Secrets and variables -> Actions` 添加：
-
-- `TAURI_SIGNING_PRIVATE_KEY`
-  - 填：私钥文件内容（或私钥路径，按你们习惯；建议内容更稳）
-- `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`
-  - 若生成私钥时设置了密码则填写，否则可留空/不建
-
-并确认仓库 Actions 允许写入 release：
-
-- `Settings -> Actions -> General -> Workflow permissions` 选择 **Read and write permissions**
-
-### 5) 发布流程（触发打包并生成 GitHub Release）
-
-执行：
-
+### 4) Release Version Bump
+To release a new version, run:
 ```bash
-npm run release
+pnpm release
 ```
+This triggers `bumpp` to bump version logs across `package.json`, `Cargo.toml`, and `tauri.conf.json`, commits files, creates a version Tag (`vX.Y.Z`), and pushes to GitHub. The workflow will catch the tag, run build matrices for both architectures, and publish updates automatically.
 
-它会完成：更新版本号（含 `tauri.conf.json` / `Cargo.toml`）→ 提交 → 打 tag（`app-vX.Y.Z`）→ push → 触发工作流打包 → 生成 Release（草稿）及 `latest.json`。
+---
 
-### 6) 验证更新
-
-1. 先安装旧版本（或保留旧版本应用）。
-2. 用 `npm run release` 发一个更高版本，等待 GitHub Release 产物完整。
-3. 打开旧版本应用，点击页面上的 `Check for updates`：
-   - 能拉到 `latest.json` 并提示更新
-   - 能下载并安装（Windows 安装更新时可能自动退出属于正常行为）
+## 📄 License
+Licensed under the [MIT License](LICENSE).

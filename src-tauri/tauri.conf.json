@@ -13,8 +13,14 @@
     "windows": [
       {
         "title": "TrayOCR",
-        "width": 800,
-        "height": 600
+        "visible": true,
+        "decorations": true,
+        "resizable": true,
+        "width": 340,
+        "height": 460,
+        "minWidth": 300,
+        "minHeight": 400,
+        "shadow": true
       }
     ],
     "security": {
@@ -31,7 +37,10 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "macOS": {
+      "minimumSystemVersion": "12.0"
+    }
   },
   "plugins": {
     "updater": {

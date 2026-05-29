@@ -7,6 +7,18 @@
     "core:default",
     "opener:default",
     "process:default",
-    "updater:default"
+    "clipboard-manager:default",
+    "clipboard-manager:allow-write-text",
+    "global-shortcut:default",
+    "global-shortcut:allow-register",
+    "notification:default",
+    "notification:allow-notify",
+    "autostart:default",
+    "autostart:allow-enable",
+    "autostart:allow-disable",
+    "autostart:allow-is-enabled",
+    "updater:default",
+    "updater:allow-check",
+    "updater:allow-download-and-install"
   ]
 }
