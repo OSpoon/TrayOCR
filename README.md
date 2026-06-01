@@ -39,7 +39,7 @@ TrayOCR is a lightweight and blazing-fast desktop utility that lives in your sys
 2. Download the installer for your system:
    - **`TrayOCR_x.x.x_aarch64.dmg`** for Apple Silicon Macs (M1, M2, M3, M4, etc.)
    - **`TrayOCR_x.x.x_x64.dmg`** for Intel Macs
-   - **`TrayOCR_x.x.x_x64-setup.exe`** or `.msi` for Windows
+   - **`TrayOCR_x.x.x_x64-setup.exe`** for Windows
 3. On macOS, drag the app into your `Applications` folder. On Windows, run the installer and launch TrayOCR from the Start menu.
 
 > [!WARNING]
