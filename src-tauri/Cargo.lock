@@ -5044,7 +5044,7 @@ dependencies = [
 
 [[package]]
 name = "tray-ocr-app"
-version = "0.1.4-beta.1"
+version = "0.1.4-beta.2"
 dependencies = [
  "block2",
  "chrono",
