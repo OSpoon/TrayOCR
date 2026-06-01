@@ -136,7 +136,7 @@ pub fn recognize_file(path: &str) -> Result<String, OcrError> {
 
     let bitmap = futures::executor::block_on(async {
         let decoder =
-            BitmapDecoder::CreateAsync(stream).map_err(|e| OcrError::Error(e.to_string()))?;
+            BitmapDecoder::CreateAsync(&stream).map_err(|e| OcrError::Error(e.to_string()))?;
         let d = decoder.await.map_err(|e| OcrError::Error(e.to_string()))?;
         d.GetSoftwareBitmapAsync()
             .map_err(|e| OcrError::Error(e.to_string()))?
