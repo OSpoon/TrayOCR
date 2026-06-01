@@ -68,9 +68,17 @@ impl ShortcutConfig {
     }
 }
 
+impl Default for ShortcutConfig {
+    fn default() -> Self {
+        Self::default_shortcut()
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppConfig {
+    #[serde(default)]
     pub shortcut: ShortcutConfig,
+    #[serde(default)]
     pub dark_mode: bool,
 }
 

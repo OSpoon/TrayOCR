@@ -10,6 +10,7 @@ export default antfu(
       commaDangle: "always-multiline",
     },
     ignores: [
+      "src-tauri/gen/schemas/**/*",
       "src-tauri/target/**/*",
     ],
   },

@@ -109,8 +109,8 @@ pub fn recognize_file(path: &str) -> Result<String, OcrError> {
 #[cfg(target_os = "windows")]
 pub fn recognize_file(path: &str) -> Result<String, OcrError> {
     use windows::{
-        core::HSTRING, Globalization::Language, Graphics::Imaging::BitmapDecoder,
-        Media::Ocr::OcrEngine, Storage::FileAccessMode, Storage::StorageFile,
+        core::HSTRING, Graphics::Imaging::BitmapDecoder, Media::Ocr::OcrEngine,
+        Storage::FileAccessMode, Storage::StorageFile,
     };
 
     let path = std::fs::canonicalize(path)
@@ -120,11 +120,19 @@ pub fn recognize_file(path: &str) -> Result<String, OcrError> {
 
     let file = futures::executor::block_on(async {
         StorageFile::GetFileFromPathAsync(&HSTRING::from(&path))
+            .map_err(|e| OcrError::Error(e.to_string()))?
+            .await
+            .map_err(|e| OcrError::Error(e.to_string()))
     })
     .map_err(|e| OcrError::Error(e.to_string()))?;
 
-    let stream = futures::executor::block_on(async { file.OpenAsync(FileAccessMode::Read) })
-        .map_err(|e| OcrError::Error(e.to_string()))?;
+    let stream = futures::executor::block_on(async {
+        file.OpenAsync(FileAccessMode::Read)
+            .map_err(|e| OcrError::Error(e.to_string()))?
+            .await
+            .map_err(|e| OcrError::Error(e.to_string()))
+    })
+    .map_err(|e| OcrError::Error(e.to_string()))?;
 
     let bitmap = futures::executor::block_on(async {
         let decoder =
@@ -159,4 +167,11 @@ pub fn recognize_file(path: &str) -> Result<String, OcrError> {
     } else {
         Ok(text)
     }
+}
+
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
+pub fn recognize_file(_path: &str) -> Result<String, OcrError> {
+    Err(OcrError::Error(
+        "System OCR is not implemented for this platform".into(),
+    ))
 }
