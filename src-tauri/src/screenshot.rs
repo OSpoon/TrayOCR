@@ -59,18 +59,25 @@ pub fn perform(app: tauri::AppHandle) {
                     }
                     Err(e) => {
                         eprintln!("OCR error: {}", e);
+                        notify(&app, "TrayOCR", &format!("OCR failed: {}", e));
                     }
                 }
                 let _ = std::fs::remove_file(&screenshot_path);
             }
             Ok(_) => {
                 let _ = std::fs::remove_file(&screenshot_path);
+                notify(&app, "TrayOCR", "Screenshot cancelled or failed");
             }
             Err(e) => {
                 eprintln!("screenshot failed: {}", e);
+                notify(&app, "TrayOCR", &format!("Screenshot failed: {}", e));
             }
         }
     });
+}
+
+fn notify(app: &tauri::AppHandle, title: &str, body: &str) {
+    let _ = app.notification().builder().title(title).body(body).show();
 }
 
 fn screenshot_path() -> std::path::PathBuf {
@@ -98,6 +105,10 @@ fn capture_screenshot(path: &std::path::Path) -> std::io::Result<std::process::E
 
 #[cfg(target_os = "windows")]
 fn capture_screenshot(path: &std::path::Path) -> std::io::Result<std::process::ExitStatus> {
+    use std::os::windows::process::CommandExt;
+
+    const CREATE_NO_WINDOW: u32 = 0x08000000;
+
     const SCRIPT: &str = r#"
 param([Parameter(Mandatory = $true)][string]$OutputPath)
 Add-Type -AssemblyName System.Windows.Forms
@@ -196,7 +207,10 @@ if ($result -ne [System.Windows.Forms.DialogResult]::OK -or -not (Test-Path $Out
     let script_path = temp_path("tray-ocr-capture", "ps1");
     std::fs::write(&script_path, SCRIPT)?;
     let status = std::process::Command::new("powershell.exe")
+        .creation_flags(CREATE_NO_WINDOW)
         .arg("-NoProfile")
+        .arg("-WindowStyle")
+        .arg("Hidden")
         .arg("-ExecutionPolicy")
         .arg("Bypass")
         .arg("-File")

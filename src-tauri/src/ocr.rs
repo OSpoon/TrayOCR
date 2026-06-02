@@ -145,8 +145,7 @@ pub fn recognize_file(path: &str) -> Result<String, OcrError> {
     })
     .map_err(|e| OcrError::Error(e.to_string()))?;
 
-    let engine = OcrEngine::TryCreateFromUserProfileLanguages()
-        .map_err(|e| OcrError::Error(e.to_string()))?;
+    let engine = create_ocr_engine()?;
 
     let result = futures::executor::block_on(async {
         engine
@@ -166,6 +165,37 @@ pub fn recognize_file(path: &str) -> Result<String, OcrError> {
         Err(OcrError::NoTextRecognized)
     } else {
         Ok(text)
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn create_ocr_engine() -> Result<windows::Media::Ocr::OcrEngine, OcrError> {
+    use windows::Media::Ocr::OcrEngine;
+
+    match OcrEngine::TryCreateFromUserProfileLanguages() {
+        Ok(engine) => Ok(engine),
+        Err(profile_error) => {
+            let languages = OcrEngine::AvailableRecognizerLanguages().map_err(|e| {
+                OcrError::Error(format!("Failed to read Windows OCR languages: {e}"))
+            })?;
+            let language_count = languages.Size().map_err(|e| {
+                OcrError::Error(format!("Failed to count Windows OCR languages: {e}"))
+            })?;
+            if language_count == 0 {
+                return Err(OcrError::Error(
+                    "No Windows OCR languages are installed. Install an OCR-capable Windows language pack.".into(),
+                ));
+            }
+
+            let language = languages.GetAt(0).map_err(|e| {
+                OcrError::Error(format!("Failed to read Windows OCR language: {e}"))
+            })?;
+            OcrEngine::TryCreateFromLanguage(&language).map_err(|e| {
+                OcrError::Error(format!(
+                    "Failed to create Windows OCR engine. User profile language error: {profile_error}; fallback language error: {e}",
+                ))
+            })
+        }
     }
 }
 
