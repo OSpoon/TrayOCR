@@ -80,7 +80,7 @@ export function useUpdater() {
       progress.value = 100
 
       pendingRestart.value = true
-      localStorage.setItem(UPDATE_PENDING_RESTART_KEY, "1")
+      localStorage.setItem(UPDATE_PENDING_RESTART_KEY, update.version)
     }
     catch (error) {
       const message = error instanceof Error ? error.message : String(error)
@@ -108,7 +108,15 @@ export function useUpdater() {
   onMounted(async () => {
     appName.value = await getName().catch(() => "")
     appVersion.value = await getVersion().catch(() => "")
-    pendingRestart.value = localStorage.getItem(UPDATE_PENDING_RESTART_KEY) === "1"
+
+    const pendingVersion = localStorage.getItem(UPDATE_PENDING_RESTART_KEY)
+    if (pendingVersion === "1" || pendingVersion === appVersion.value) {
+      localStorage.removeItem(UPDATE_PENDING_RESTART_KEY)
+      pendingRestart.value = false
+    }
+    else {
+      pendingRestart.value = Boolean(pendingVersion)
+    }
 
     unlistenCheckUpdates = await listen("app://check-updates", () => {
       void checkForUpdates()
