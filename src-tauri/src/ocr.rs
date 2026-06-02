@@ -113,10 +113,12 @@ pub fn recognize_file(path: &str) -> Result<String, OcrError> {
         Storage::FileAccessMode, Storage::StorageFile,
     };
 
-    let path = std::fs::canonicalize(path)
-        .map_err(|e| OcrError::Error(e.to_string()))?
-        .to_string_lossy()
-        .to_string();
+    let path = normalize_windows_path(
+        std::fs::canonicalize(path)
+            .map_err(|e| OcrError::Error(e.to_string()))?
+            .to_string_lossy()
+            .as_ref(),
+    );
 
     let file = futures::executor::block_on(async {
         StorageFile::GetFileFromPathAsync(&HSTRING::from(&path))
@@ -196,6 +198,17 @@ fn create_ocr_engine() -> Result<windows::Media::Ocr::OcrEngine, OcrError> {
                 ))
             })
         }
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn normalize_windows_path(path: &str) -> String {
+    if let Some(stripped) = path.strip_prefix(r"\\?\UNC\") {
+        format!(r"\\{stripped}")
+    } else if let Some(stripped) = path.strip_prefix(r"\\?\") {
+        stripped.to_string()
+    } else {
+        path.to_string()
     }
 }
 

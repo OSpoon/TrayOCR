@@ -47,11 +47,12 @@ pub fn setup(
     let img_bytes = include_bytes!("../icons/tray-icon.png");
     let icon = tauri::image::Image::from_bytes(img_bytes).expect("failed to load tray icon");
 
-    TrayIconBuilder::new()
+    TrayIconBuilder::with_id("main")
         .tooltip("TrayOCR")
         .icon_as_template(false)
         .icon(icon)
         .menu(&menu)
+        .show_menu_on_left_click(false)
         .on_menu_event(move |app, event| match event.id.as_ref() {
             "quit" => app.exit(0),
             "screenshot" => perform_screenshot(app.clone()),
@@ -92,16 +93,6 @@ pub fn setup(
                 if let Some(win) = app.get_webview_window("main") {
                     let _ = win.show();
                     let _ = win.set_focus();
-                }
-            }
-            TrayIconEvent::Click {
-                button: MouseButton::Right,
-                button_state: MouseButtonState::Up,
-                ..
-            } => {
-                let app = tray.app_handle();
-                if let Ok(new_menu) = build_menu(app) {
-                    let _ = tray.set_menu(Some(new_menu));
                 }
             }
             _ => {}
