@@ -10,7 +10,6 @@ edition = "2021"
 [lib]
 # The `_lib` suffix may seem redundant but it is necessary
 # to make the lib name unique and wouldn't conflict with the bin name.
-# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
 name = "tray_ocr_app_lib"
 crate-type = [
   "staticlib",
@@ -48,15 +47,3 @@ objc2-vision = { version = "0.3", features = [
   "VNRequestRevisionProviding",
 ] }
 block2 = "0.6"
-
-[target.'cfg(target_os = "windows")'.dependencies]
-windows = { version = "0.62", features = [
-  "Foundation_Collections",
-  "Foundation",
-  "Globalization",
-  "Graphics_Imaging",
-  "Media_Ocr",
-  "Storage",
-  "Storage_Streams",
-] }
-futures = "0.3"
