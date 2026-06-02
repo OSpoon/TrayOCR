@@ -1,3 +1,6 @@
+#[cfg(not(target_os = "macos"))]
+compile_error!("TrayOCR only supports macOS.");
+
 mod config;
 mod history;
 mod menus;

@@ -12,7 +12,7 @@ TrayOCR is a lightweight and blazing-fast desktop utility that lives in your mac
 
 ## 🌟 Key Features
 
-- **Menu-Bar / Tray POP UI**: Designed to stay out of your way. Clicking the tray icon opens a sleek popover window; the app runs in agent mode without taking space in your Dock.
+- **Menu-Bar POP UI**: Designed to stay out of your way. Clicking the menu bar icon opens a sleek popover window; the app runs in agent mode without taking space in your Dock.
 - **Native System OCR**: Uses Apple's Vision framework on macOS.
 - **Flexible Global Shortcuts**: Set your own hotkeys (e.g. `⌘⌥X` or `⌥A`) in the UI to trigger screen area capture globally.
 - **Click-to-Copy History**: Stores up to 200 historical OCR scans locally with timestamp logs. Just click any card to copy the text to your clipboard.
@@ -64,7 +64,7 @@ Compile optimized production bundles:
 ```bash
 pnpm tauri build
 ```
-This runs type-checking (`vue-tsc`), packages assets with Vite, and cross-compiles targets using Cargo.
+This runs type-checking (`vue-tsc`), packages assets with Vite, and builds the current macOS target using Cargo.
 
 ---
 
